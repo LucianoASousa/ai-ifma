@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predição de Bilheteria TMDB - IFMA</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-film"></i>
+            <div>
+              <h1>Predição de Bilheteria TMDB</h1>
+              <p>Instituto Federal do Maranhão - IFMA Campus Imperatriz</p>
+            </div>
+          </div>
+          <div class="header-info">
+            <span><i class="fas fa-brain"></i> Machine Learning</span>
+            <span
+              ><i class="fas fa-chart-line"></i> Regressão Linear &
+              Logística</span
+            >
+          </div>
+        </div>
+      </header>
+
+      <!-- Navigation -->
+      <nav class="nav-tabs">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="predictor">
+            �� Preditor
+          </button>
+          <button class="tab-btn" data-tab="analise">📊 Análise</button>
+          <button class="tab-btn" data-tab="versoes">🎯 Versões</button>
+          <button class="tab-btn" data-tab="sobre">ℹ️ Sobre</button>
+        </div>
+      </nav>
+
+      <!-- Predictor Tab -->
+      <div class="tab-content active" id="predictor">
+        <div class="predictor-section">
+          <h2><i class="fas fa-magic"></i> Preditor de Bilheteria</h2>
+          <p class="subtitle">
+            Insira as características do filme para prever sua bilheteria
+          </p>
+
+          <div class="predictor-grid">
+            <div class="input-form">
+              <div class="form-group">
+                <label for="budget">
+                  <i class="fas fa-dollar-sign"></i> Orçamento (USD)
+                </label>
+                <input
+                  type="number"
+                  id="budget"
+                  placeholder="Ex: 50000000"
+                  min="1000000"
+                  max="500000000"
+                  value="50000000"
+                />
+                <small>Entre $1M e $500M</small>
+              </div>
+
+              <div class="form-group">
+                <label for="popularity">
+                  <i class="fas fa-star"></i> Popularidade
+                </label>
+                <input
+                  type="number"
+                  id="popularity"
+                  placeholder="Ex: 45.5"
+                  min="1"
+                  max="100"
+                  step="0.1"
+                  value="45.5"
+                />
+                <small>Escala de 1 a 100</small>
+              </div>
+
+              <div class="form-group">
+                <label for="runtime">
+                  <i class="fas fa-clock"></i> Duração (minutos)
+                </label>
+                <input
+                  type="number"
+                  id="runtime"
+                  placeholder="Ex: 120"
+                  min="60"
+                  max="300"
+                  value="120"
+                />
+                <small>Entre 60 e 300 minutos</small>
+              </div>
+
+              <button class="predict-btn" onclick="predictRevenue()">
+                <i class="fas fa-calculator"></i> Prever Bilheteria
+              </button>
+            </div>
+
+            <div class="results-panel">
+              <div
+                class="loading-spinner"
+                id="loadingSpinner"
+                style="display: none"
+              >
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Executando algoritmos...</p>
+              </div>
+
+              <div
+                class="prediction-results"
+                id="predictionResults"
+                style="display: none"
+              >
+                <h3>
+                  <i class="fas fa-chart-line"></i> Resultados da Predição
+                </h3>
+
+                <div class="result-card linear">
+                  <div class="result-header">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Regressão Linear</span>
+                  </div>
+                  <div class="result-value" id="linearResult">$0</div>
+                  <p class="result-desc">Valor estimado da bilheteria</p>
+                </div>
+
+                <div class="result-card logistic">
+                  <div class="result-header">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Regressão Logística</span>
+                  </div>
+                  <div class="result-value" id="logisticResult">Baixa</div>
+                  <div class="probability-bar">
+                    <div class="probability-fill" id="probabilityFill"></div>
+                  </div>
+                  <p class="result-desc">
+                    Classificação: <span id="probabilityText">0%</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Versões Tab -->
+      <div id="versoes" class="tab-content">
+        <div class="glass-card">
+          <h2>🎯 Duas Versões dos Algoritmos</h2>
+          <p>
+            Este projeto possui duas implementações dos algoritmos de Machine
+            Learning:
+          </p>
+
+          <div class="versions-comparison">
+            <div class="version-card academic">
+              <h3>📊 Versão Acadêmica Completa</h3>
+              <div class="version-info">
+                <p>
+                  <strong>Arquivo:</strong>
+                  <code>../tmdb-box-office-prediction/main.py</code>
+                </p>
+                <p>
+                  <strong>Ideal para:</strong> Apresentação acadêmica e artigo
+                  científico
+                </p>
+
+                <h4>✨ Recursos:</h4>
+                <ul>
+                  <li>📈 Análise exploratória visual com pandas</li>
+                  <li>🎨 Gráficos profissionais (matplotlib, seaborn)</li>
+                  <li>📊 Histogramas de distribuição</li>
+                  <li>📦 Boxplots para detecção de outliers</li>
+                  <li>🔗 Matriz de correlação visual</li>
+                  <li>📈 Curva ROC com AUC</li>
+                  <li>🎯 Matriz de confusão visual</li>
+                  <li>📉 Evolução da função de custo</li>
+                </ul>
+
+                <div class="action-buttons">
+                  <button id="executar-main-original" class="btn-primary">
+                    🚀 Executar Análise Acadêmica
+                  </button>
+                  <button id="info-academica" class="btn-secondary">
+                    📋 Ver Detalhes
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="version-card web">
+              <h3>🌐 Versão Web Simplificada</h3>
+              <div class="version-info">
+                <p><strong>Arquivo:</strong> <code>src/main_simple.py</code></p>
+                <p>
+                  <strong>Ideal para:</strong> Demonstração interativa e testes
+                  rápidos
+                </p>
+
+                <h4>⚡ Recursos:</h4>
+                <ul>
+                  <li>🔧 Apenas bibliotecas padrão Python</li>
+                  <li>🚀 Algoritmos implementados do zero</li>
+                  <li>⚡ Execução rápida</li>
+                  <li>🌐 Integração com Flask</li>
+                  <li>🎮 Interface web interativa</li>
+                  <li>📱 Design responsivo</li>
+                  <li>🔮 Predições em tempo real</li>
+                </ul>
+
+                <div class="action-buttons">
+                  <button id="usar-web" class="btn-primary">
+                    🎮 Usar Interface Web
+                  </button>
+                  <button id="info-web" class="btn-secondary">
+                    📋 Ver Detalhes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="recommendation">
+            <h3>🎓 Recomendação para Avaliação</h3>
+            <p><strong>Use AMBAS as versões:</strong></p>
+            <ol>
+              <li>
+                <strong>main.py</strong> → Para gerar gráficos e análises do
+                artigo científico
+              </li>
+              <li>
+                <strong>app.py</strong> → Para demonstração interativa ao
+                professor
+              </li>
+            </ol>
+          </div>
+
+          <div
+            id="execution-result"
+            class="result-container"
+            style="display: none"
+          >
+            <h3>📊 Resultado da Execução</h3>
+            <div id="execution-output"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analysis Tab -->
+      <div id="analise" class="tab-content">
+        <div class="analysis-section">
+          <h2><i class="fas fa-chart-bar"></i> Análise Completa dos Dados</h2>
+          <p class="subtitle">
+            Métricas e visualizações dos algoritmos implementados
+          </p>
+
+          <button class="analyze-btn" onclick="runFullAnalysis()">
+            <i class="fas fa-play"></i> Executar Análise Completa
+          </button>
+
+          <div
+            class="loading-spinner"
+            id="analysisLoading"
+            style="display: none"
+          >
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Executando análise completa...</p>
+          </div>
+
+          <div
+            class="analysis-results"
+            id="analysisResults"
+            style="display: none"
+          >
+            <!-- Dataset Info -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <i class="fas fa-database"></i>
+                <div>
+                  <h3 id="totalSamples">0</h3>
+                  <p>Amostras Totais</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <i class="fas fa-chart-area"></i>
+                <div>
+                  <h3 id="meanRevenue">$0</h3>
+                  <p>Bilheteria Média</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <i class="fas fa-chart-line"></i>
+                <div>
+                  <h3 id="medianRevenue">$0</h3>
+                  <p>Bilheteria Mediana</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <i class="fas fa-trophy"></i>
+                <div>
+                  <h3 id="maxRevenue">$0</h3>
+                  <p>Maior Bilheteria</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metrics Tables -->
+            <div class="metrics-grid">
+              <div class="metrics-card">
+                <h3><i class="fas fa-chart-line"></i> Regressão Linear</h3>
+                <table id="linearMetrics">
+                  <tr>
+                    <td>MSE (Teste)</td>
+                    <td id="mse">-</td>
+                  </tr>
+                  <tr>
+                    <td>RMSE (Teste)</td>
+                    <td id="rmse">-</td>
+                  </tr>
+                  <tr>
+                    <td>MAE (Teste)</td>
+                    <td id="mae">-</td>
+                  </tr>
+                  <tr>
+                    <td>R² (Teste)</td>
+                    <td id="r2">-</td>
+                  </tr>
+                </table>
+              </div>
+
+              <div class="metrics-card">
+                <h3><i class="fas fa-chart-pie"></i> Regressão Logística</h3>
+                <table id="logisticMetrics">
+                  <tr>
+                    <td>Acurácia</td>
+                    <td id="accuracy">-</td>
+                  </tr>
+                  <tr>
+                    <td>Precisão</td>
+                    <td id="precision">-</td>
+                  </tr>
+                  <tr>
+                    <td>Recall</td>
+                    <td id="recall">-</td>
+                  </tr>
+                  <tr>
+                    <td>F1-Score</td>
+                    <td id="f1">-</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+              <div class="chart-card">
+                <h3>Evolução do Custo - Regressão Linear</h3>
+                <canvas id="linearCostChart"></canvas>
+              </div>
+              <div class="chart-card">
+                <h3>Evolução do Custo - Regressão Logística</h3>
+                <canvas id="logisticCostChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Confusion Matrix -->
+            <div class="confusion-matrix-card">
+              <h3><i class="fas fa-table"></i> Matriz de Confusão</h3>
+              <div class="confusion-matrix" id="confusionMatrix">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Sample Predictions -->
+            <div class="predictions-card">
+              <h3><i class="fas fa-list"></i> Exemplos de Predições</h3>
+              <div class="predictions-table" id="predictionsTable">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- About Tab -->
+      <div id="sobre" class="tab-content">
+        <div class="about-section">
+          <h2><i class="fas fa-info-circle"></i> Sobre o Projeto</h2>
+
+          <div class="info-grid">
+            <div class="info-card">
+              <i class="fas fa-graduation-cap"></i>
+              <h3>Informações Acadêmicas</h3>
+              <ul>
+                <li><strong>Instituição:</strong> IFMA Campus Imperatriz</li>
+                <li><strong>Curso:</strong> Ciência da Computação</li>
+                <li><strong>Disciplina:</strong> Introdução à IA</li>
+                <li><strong>Professor:</strong> Daniel Duarte Costa</li>
+              </ul>
+            </div>
+
+            <div class="info-card">
+              <i class="fas fa-cogs"></i>
+              <h3>Tecnologias Utilizadas</h3>
+              <ul>
+                <li><strong>Backend:</strong> Python + Flask</li>
+                <li><strong>Frontend:</strong> HTML5 + CSS3 + JavaScript</li>
+                <li>
+                  <strong>ML:</strong> Implementação própria (sem sklearn)
+                </li>
+                <li><strong>Dataset:</strong> TMDB Box Office Prediction</li>
+              </ul>
+            </div>
+
+            <div class="info-card">
+              <i class="fas fa-brain"></i>
+              <h3>Algoritmos Implementados</h3>
+              <ul>
+                <li>
+                  <strong>Regressão Linear:</strong> Com gradiente descendente
+                </li>
+                <li>
+                  <strong>Regressão Logística:</strong> Classificação binária
+                </li>
+                <li>
+                  <strong>Métricas:</strong> MSE, RMSE, MAE, R², Acurácia, etc.
+                </li>
+                <li><strong>Visualizações:</strong> Gráficos interativos</li>
+              </ul>
+            </div>
+
+            <div class="info-card">
+              <i class="fas fa-check-circle"></i>
+              <h3>Funcionalidades</h3>
+              <ul>
+                <li>Predição interativa de bilheteria</li>
+                <li>Análise completa dos dados</li>
+                <li>Visualizações em tempo real</li>
+                <li>Interface responsiva e moderna</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="project-description">
+            <h3>🔧 Construção e Arquitetura do Código</h3>
+
+            <div class="code-section">
+              <h4><i class="fas fa-server"></i> Backend - Flask API</h4>
+              <div class="code-details">
+                <p><strong>Estrutura Principal:</strong></p>
+                <ul>
+                  <li>
+                    <code>app.py</code> - Servidor Flask com 4 endpoints
+                    principais
+                  </li>
+                  <li>
+                    <code>main_simple.py</code> - Classes de ML implementadas do
+                    zero
+                  </li>
+                  <li>Cache global para otimização de performance</li>
+                </ul>
+
+                <p><strong>Endpoints da API:</strong></p>
+                <ul>
+                  <li><code>GET /</code> - Interface principal</li>
+                  <li><code>POST /api/predict</code> - Predição individual</li>
+                  <li><code>GET /api/analyze</code> - Análise completa</li>
+                  <li><code>GET /api/status</code> - Status do sistema</li>
+                </ul>
+
+                <p><strong>Otimizações Implementadas:</strong></p>
+                <ul>
+                  <li>
+                    <strong>Normalização de dados:</strong> Valores de
+                    bilheteria normalizados (0-1) para evitar overflow
+                  </li>
+                  <li>
+                    <strong>Cache inteligente:</strong> Modelos treinados uma
+                    vez e reutilizados
+                  </li>
+                  <li>
+                    <strong>Validação robusta:</strong> Filtros para dados
+                    válidos (budget > $1M, runtime > 60min)
+                  </li>
+                  <li>
+                    <strong>Tratamento de erros:</strong> Try-catch em todas as
+                    operações críticas
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="code-section">
+              <h4>
+                <i class="fas fa-brain"></i> Algoritmos de Machine Learning
+              </h4>
+              <div class="code-details">
+                <p>
+                  <strong>Regressão Linear (Implementação Própria):</strong>
+                </p>
+                <ul>
+                  <li>
+                    <strong>Gradiente Descendente:</strong>
+                    <code>θ = θ - α∇J(θ)</code>
+                  </li>
+                  <li>
+                    <strong>Função de Custo:</strong> MSE =
+                    <code>1/2m Σ(h(x) - y)²</code>
+                  </li>
+                  <li>
+                    <strong>Learning Rate:</strong> 0.01 (otimizado para
+                    convergência)
+                  </li>
+                  <li>
+                    <strong>Convergência:</strong> Detecção automática quando
+                    custo estabiliza
+                  </li>
+                </ul>
+
+                <p>
+                  <strong>Regressão Logística (Implementação Própria):</strong>
+                </p>
+                <ul>
+                  <li>
+                    <strong>Função Sigmoid:</strong>
+                    <code>σ(z) = 1/(1 + e^(-z))</code>
+                  </li>
+                  <li>
+                    <strong>Log-Likelihood:</strong>
+                    <code>J = -1/m Σ[y*log(h) + (1-y)*log(1-h)]</code>
+                  </li>
+                  <li>
+                    <strong>Classificação:</strong> Alta/Baixa bilheteria
+                    (threshold = mediana)
+                  </li>
+                  <li>
+                    <strong>Probabilidades:</strong> Saída contínua entre 0 e 1
+                  </li>
+                </ul>
+
+                <p><strong>Métricas Implementadas:</strong></p>
+                <ul>
+                  <li><strong>Regressão:</strong> MSE, RMSE, MAE, R² Score</li>
+                  <li>
+                    <strong>Classificação:</strong> Acurácia, Precisão, Recall,
+                    F1-Score
+                  </li>
+                  <li>
+                    <strong>Matriz de Confusão:</strong> TP, FP, TN, FN
+                    calculados manualmente
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="code-section">
+              <h4>
+                <i class="fas fa-palette"></i> Frontend - Interface Moderna
+              </h4>
+              <div class="code-details">
+                <p><strong>Design System:</strong></p>
+                <ul>
+                  <li>
+                    <strong>Glassmorphism:</strong> backdrop-filter,
+                    transparências, bordas suaves
+                  </li>
+                  <li>
+                    <strong>Gradientes:</strong> Linear azul-roxo (#667eea →
+                    #764ba2)
+                  </li>
+                  <li>
+                    <strong>Responsividade:</strong> CSS Grid + Flexbox para
+                    todos os dispositivos
+                  </li>
+                  <li>
+                    <strong>Tipografia:</strong> Google Fonts (Inter) para
+                    legibilidade
+                  </li>
+                </ul>
+
+                <p><strong>JavaScript Interativo:</strong></p>
+                <ul>
+                  <li>
+                    <strong>AJAX Requests:</strong> Fetch API para comunicação
+                    assíncrona
+                  </li>
+                  <li>
+                    <strong>Validação em Tempo Real:</strong> Feedback
+                    instantâneo nos inputs
+                  </li>
+                  <li>
+                    <strong>Chart.js:</strong> Gráficos de convergência
+                    interativos
+                  </li>
+                  <li>
+                    <strong>Estados de Loading:</strong> Spinners e feedback
+                    visual
+                  </li>
+                </ul>
+
+                <p><strong>Funcionalidades Avançadas:</strong></p>
+                <ul>
+                  <li>
+                    <strong>Exemplos Pré-definidos:</strong> Filmes famosos para
+                    teste rápido
+                  </li>
+                  <li>
+                    <strong>Formatação Brasileira:</strong> Moeda (R$) e números
+                    localizados
+                  </li>
+                  <li>
+                    <strong>Navegação por Abas:</strong> SPA (Single Page
+                    Application)
+                  </li>
+                  <li>
+                    <strong>Animações CSS:</strong> Transições suaves e
+                    micro-interações
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="code-section">
+              <h4><i class="fas fa-database"></i> Processamento de Dados</h4>
+              <div class="code-details">
+                <p><strong>Dataset TMDB:</strong></p>
+                <ul>
+                  <li>
+                    <strong>Volume:</strong> 1.938 registros válidos de ~3.000
+                    totais
+                  </li>
+                  <li>
+                    <strong>Features:</strong> Budget, Popularity, Runtime
+                  </li>
+                  <li><strong>Target:</strong> Revenue (bilheteria)</li>
+                  <li>
+                    <strong>Filtros:</strong> Budget > $1M, Runtime > 60min,
+                    Popularity > 1
+                  </li>
+                </ul>
+
+                <p><strong>Pré-processamento:</strong></p>
+                <ul>
+                  <li>
+                    <strong>Normalização Z-Score:</strong>
+                    <code>(x - μ) / σ</code>
+                  </li>
+                  <li>
+                    <strong>Divisão Train/Test:</strong> 70% treino, 30% teste
+                  </li>
+                  <li>
+                    <strong>Tratamento de Outliers:</strong> Remoção de valores
+                    extremos
+                  </li>
+                  <li>
+                    <strong>Encoding de Classes:</strong> Mediana como threshold
+                    para classificação
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <h3>📊 Descrição do Projeto</h3>
+            <p>
+              Este projeto implementa algoritmos de Machine Learning para
+              predição de bilheteria de filmes utilizando o dataset TMDB (The
+              Movie Database). Os algoritmos foram desenvolvidos do zero, sem
+              uso de bibliotecas prontas como scikit-learn, demonstrando
+              compreensão profunda dos fundamentos matemáticos.
+            </p>
+            <p>
+              O sistema permite tanto predições individuais quanto análise
+              completa dos dados, incluindo métricas de avaliação, visualizações
+              de convergência e matriz de confusão.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>
