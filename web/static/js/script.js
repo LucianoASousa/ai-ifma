@@ -196,6 +196,7 @@ async function runFullAnalysis() {
       data.logistic_regression.cost_history,
       "Regressão Logística"
     );
+    createScatterChart(data.scatter_data);
 
     // Atualizar matriz de confusão
     createConfusionMatrix(data.logistic_regression.confusion_matrix);
@@ -214,20 +215,72 @@ async function runFullAnalysis() {
 }
 
 function createCostChart(canvasId, costHistory, title) {
+  console.log(`Criando gráfico ${title}:`, {
+    canvasId,
+    costHistoryLength: costHistory.length,
+    firstValues: costHistory.slice(0, 5),
+    lastValues: costHistory.slice(-5),
+  });
+
   const ctx = document.getElementById(canvasId).getContext("2d");
 
   if (window[canvasId + "Chart"]) {
     window[canvasId + "Chart"].destroy();
   }
 
+  // Filtrar valores inválidos (NaN, Infinity, etc.)
+  const validCostHistory = costHistory.filter(
+    (cost) =>
+      typeof cost === "number" && isFinite(cost) && !isNaN(cost) && cost >= 0
+  );
+
+  console.log(`Valores válidos filtrados para ${title}:`, {
+    originalLength: costHistory.length,
+    validLength: validCostHistory.length,
+    minValue: Math.min(...validCostHistory),
+    maxValue: Math.max(...validCostHistory),
+  });
+
+  if (validCostHistory.length === 0) {
+    console.error(
+      `Nenhum valor válido encontrado no cost_history para ${title}`
+    );
+    return;
+  }
+
+  // Calcular limites apropriados para o eixo Y
+  const minCost = Math.min(...validCostHistory);
+  const maxCost = Math.max(...validCostHistory);
+  const costRange = maxCost - minCost;
+
+  // Se o range for muito pequeno, usar valores padrão
+  let yMin, yMax;
+  if (costRange < 1e-10) {
+    yMin = minCost - 0.1;
+    yMax = maxCost + 0.1;
+  } else {
+    // Adicionar margem de 10% para melhor visualização
+    const margin = costRange * 0.1;
+    yMin = Math.max(0, minCost - margin);
+    yMax = maxCost + margin;
+  }
+
+  console.log(`Configuração do eixo Y para ${title}:`, {
+    minCost,
+    maxCost,
+    costRange,
+    yMin,
+    yMax,
+  });
+
   window[canvasId + "Chart"] = new Chart(ctx, {
     type: "line",
     data: {
-      labels: costHistory.map((_, index) => index + 1),
+      labels: validCostHistory.map((_, index) => index + 1),
       datasets: [
         {
           label: "Custo",
-          data: costHistory,
+          data: validCostHistory,
           borderColor: "#667eea",
           backgroundColor: "rgba(102, 126, 234, 0.1)",
           borderWidth: 2,
@@ -239,6 +292,10 @@ function createCostChart(canvasId, costHistory, title) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        intersect: false,
+        mode: "index",
+      },
       plugins: {
         legend: {
           display: false,
@@ -251,9 +308,19 @@ function createCostChart(canvasId, costHistory, title) {
             weight: "600",
           },
         },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return `Iteração ${context.label}: ${context.parsed.y.toFixed(
+                6
+              )}`;
+            },
+          },
+        },
       },
       scales: {
         x: {
+          type: "linear",
           title: {
             display: true,
             text: "Iterações",
@@ -261,14 +328,162 @@ function createCostChart(canvasId, costHistory, title) {
           grid: {
             color: "rgba(0, 0, 0, 0.1)",
           },
+          ticks: {
+            maxTicksLimit: 10,
+          },
         },
         y: {
+          type: "linear",
+          min: yMin,
+          max: yMax,
           title: {
             display: true,
             text: "Custo",
           },
           grid: {
             color: "rgba(0, 0, 0, 0.1)",
+          },
+          ticks: {
+            callback: function (value) {
+              return value.toFixed(4);
+            },
+            maxTicksLimit: 8,
+          },
+        },
+      },
+    },
+  });
+
+  console.log(`Gráfico ${title} criado com sucesso!`);
+}
+
+function createScatterChart(scatterData) {
+  const ctx = document.getElementById("scatterChart").getContext("2d");
+
+  if (window.scatterChartInstance) {
+    window.scatterChartInstance.destroy();
+  }
+
+  // Preparar dados para o gráfico de dispersão
+  const chartData = scatterData.real_values.map((real, index) => ({
+    x: real,
+    y: scatterData.predicted_values[index],
+  }));
+
+  // Calcular limites mais apropriados para os eixos
+  const minVal = Math.max(0, scatterData.min_value); // Garantir que não seja negativo
+  const maxVal = scatterData.max_value;
+
+  // Adicionar margem de 10% nos eixos
+  const margin = (maxVal - minVal) * 0.1;
+  const axisMin = Math.max(0, minVal - margin);
+  const axisMax = maxVal + margin;
+
+  // Linha de referência perfeita (y = x)
+  const perfectLine = [
+    { x: axisMin, y: axisMin },
+    { x: axisMax, y: axisMax },
+  ];
+
+  window.scatterChartInstance = new Chart(ctx, {
+    type: "scatter",
+    data: {
+      datasets: [
+        {
+          label: "Predições",
+          data: chartData,
+          backgroundColor: "rgba(102, 126, 234, 0.6)",
+          borderColor: "rgba(102, 126, 234, 1)",
+          borderWidth: 1,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        },
+        {
+          label: "Predição Perfeita (y=x)",
+          data: perfectLine,
+          type: "line",
+          borderColor: "rgba(239, 68, 68, 1)",
+          borderWidth: 2,
+          borderDash: [5, 5],
+          fill: false,
+          pointRadius: 0,
+          pointHoverRadius: 0,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+        },
+        title: {
+          display: true,
+          text: "Receita Real vs Receita Prevista",
+          font: {
+            size: 16,
+            weight: "600",
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              if (context.datasetIndex === 0) {
+                return `Real: ${formatCurrency(
+                  context.parsed.x
+                )}, Previsto: ${formatCurrency(context.parsed.y)}`;
+              }
+              return context.dataset.label;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          type: "linear",
+          position: "bottom",
+          min: axisMin,
+          max: axisMax,
+          title: {
+            display: true,
+            text: "Receita Real (USD)",
+            font: {
+              size: 12,
+              weight: "600",
+            },
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0.1)",
+          },
+          ticks: {
+            callback: function (value) {
+              return formatCurrency(value);
+            },
+            maxTicksLimit: 8,
+          },
+        },
+        y: {
+          type: "linear",
+          min: axisMin,
+          max: axisMax,
+          title: {
+            display: true,
+            text: "Receita Prevista (USD)",
+            font: {
+              size: 12,
+              weight: "600",
+            },
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0.1)",
+          },
+          ticks: {
+            callback: function (value) {
+              return formatCurrency(value);
+            },
+            maxTicksLimit: 8,
           },
         },
       },

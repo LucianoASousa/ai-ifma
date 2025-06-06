@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TMDB Box Office Predictor - Apresentação</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        overflow: hidden;
+      }
+
+      .slide {
+        display: none;
+        width: 100vw;
+        height: 100vh;
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      .slide.active {
+        display: flex;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      h2 {
+        font-size: 2.5rem;
+        margin-bottom: 25px;
+        color: #ffd700;
+      }
+
+      h3 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #87ceeb;
+      }
+
+      p,
+      li {
+        font-size: 1.4rem;
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+
+      ul {
+        text-align: left;
+        max-width: 800px;
+      }
+
+      .highlight {
+        background: rgba(255, 215, 0, 0.2);
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+
+      .code {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        border-radius: 10px;
+        font-family: "Courier New", monospace;
+        margin: 20px 0;
+        text-align: left;
+      }
+
+      .navigation {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 1000;
+      }
+
+      .nav-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        padding: 15px 25px;
+        margin: 0 5px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .slide-counter {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        font-size: 1.2rem;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 10px 20px;
+        border-radius: 20px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+      }
+
+      .emoji {
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 30px;
+      }
+
+      .metric {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ffd700;
+      }
+
+      .architecture {
+        font-family: "Courier New", monospace;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 30px;
+        border-radius: 15px;
+        text-align: left;
+        white-space: pre-line;
+        font-size: 1.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Slide 1: Título -->
+    <div class="slide active">
+      <div class="emoji">🎬</div>
+      <h1>TMDB Box Office Predictor</h1>
+      <h2>Predição de Bilheteria usando Machine Learning</h2>
+      <p>
+        <strong>Instituto Federal do Maranhão - IFMA Campus Imperatriz</strong>
+      </p>
+      <p><strong>Disciplina:</strong> Introdução à Inteligência Artificial</p>
+      <p><strong>Professor:</strong> Daniel Duarte Costa</p>
+    </div>
+
+    <!-- Slide 2: Agenda -->
+    <div class="slide">
+      <h2>📋 Agenda da Apresentação</h2>
+      <ul>
+        <li><strong>Visão Geral do Projeto</strong></li>
+        <li><strong>Objetivos e Metodologia</strong></li>
+        <li><strong>Arquitetura e Estrutura</strong></li>
+        <li><strong>Algoritmos Implementados</strong></li>
+        <li><strong>Interface Web Interativa</strong></li>
+        <li><strong>Resultados e Métricas</strong></li>
+        <li><strong>Demonstração Prática</strong></li>
+        <li><strong>Conclusões e Aprendizados</strong></li>
+      </ul>
+    </div>
+
+    <!-- Slide 3: Visão Geral -->
+    <div class="slide">
+      <h2>🎯 Visão Geral do Projeto</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>O que é?</h3>
+          <ul>
+            <li>
+              Sistema de
+              <span class="highlight">predição de bilheteria</span> de filmes
+            </li>
+            <li>
+              Implementação <span class="highlight">do zero</span> (sem sklearn)
+            </li>
+            <li>
+              Dataset real do <span class="highlight">TMDB</span> com 1.938
+              filmes
+            </li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Diferenciais</h3>
+          <ul>
+            <li>
+              ✅ <span class="highlight">Implementação própria</span> de
+              algoritmos
+            </li>
+            <li>✅ <span class="highlight">Interface web moderna</span></li>
+            <li>
+              ✅ <span class="highlight">Análise acadêmica</span> completa
+            </li>
+            <li>✅ <span class="highlight">Três versões</span> diferentes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Objetivos -->
+    <div class="slide">
+      <h2>🎯 Objetivos do Projeto</h2>
+      <div class="card">
+        <h3>Objetivo Principal</h3>
+        <p>
+          Desenvolver um sistema completo de predição de bilheteria
+          implementando algoritmos de ML do zero
+        </p>
+      </div>
+      <div class="card">
+        <h3>Objetivos Específicos</h3>
+        <ul>
+          <li>
+            📊 Implementar <strong>Regressão Linear</strong> com gradiente
+            descendente
+          </li>
+          <li>
+            🎯 Implementar <strong>Regressão Logística</strong> para
+            classificação
+          </li>
+          <li>📈 Calcular <strong>métricas completas</strong> manualmente</li>
+          <li>🌐 Criar <strong>interface web</strong> para demonstrações</li>
+          <li>📋 Gerar <strong>análise acadêmica</strong> com visualizações</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Slide 5: Arquitetura -->
+    <div class="slide">
+      <h2>🏗️ Arquitetura do Sistema</h2>
+      <div class="architecture">
+        📁 tmdb-ml-project/ ├── 🌐 app.py # Interface Web Flask (323 linhas) ├──
+        📊 main.py # Análise Acadêmica (527 linhas) ├── 🔧 main_simple.py #
+        Classes ML do Zero (614 linhas) ├── 🚀 start.sh # Script de
+        Inicialização ├── 📁 data/ # Datasets TMDB (67MB) ├── 📁 web/ #
+        Interface Moderna │ ├── templates/ # HTML (701 linhas) │ └── static/ #
+        CSS + JavaScript (1635 linhas) └── 📁 docs/ # Documentação
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Três Versões Complementares</h3>
+          <ul>
+            <li><strong>Web</strong> - Demonstração interativa</li>
+            <li><strong>Acadêmica</strong> - Gráficos para artigo</li>
+            <li><strong>Pura</strong> - Implementação educacional</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Regressão Linear -->
+    <div class="slide">
+      <h2>🧠 Regressão Linear</h2>
+      <div class="code">
+        # Gradiente Descendente Manual θ = θ - α∇J(θ) # Função de Custo MSE
+        Normalizada J(θ) = 1/2m Σ(h(x) - y)² / σ_y
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Características</h3>
+          <ul>
+            <li><strong>Learning Rate:</strong> 0.01</li>
+            <li><strong>Convergência:</strong> Automática</li>
+            <li><strong>Normalização:</strong> Para estabilidade</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Features → Target</h3>
+          <ul>
+            <li><strong>Budget</strong> (Orçamento)</li>
+            <li><strong>Popularity</strong> (Popularidade)</li>
+            <li><strong>Runtime</strong> (Duração)</li>
+            <li><strong>→ Revenue</strong> (Bilheteria)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Regressão Logística -->
+    <div class="slide">
+      <h2>🧠 Regressão Logística</h2>
+      <div class="code">
+        # Função Sigmoid σ(z) = 1/(1 + e^(-z)) # Log-Likelihood J = -1/m
+        Σ[y*log(h) + (1-y)*log(1-h)]
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Características</h3>
+          <ul>
+            <li><strong>Classificação:</strong> Alta/Baixa bilheteria</li>
+            <li><strong>Threshold:</strong> Baseado na mediana</li>
+            <li><strong>Proteção:</strong> Contra overflow</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Saída</h3>
+          <ul>
+            <li><strong>Classe:</strong> Alta ou Baixa</li>
+            <li><strong>Probabilidade:</strong> 0 a 1</li>
+            <li><strong>Threshold:</strong> $42.3M (mediana)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Métricas -->
+    <div class="slide">
+      <h2>📊 Métricas Implementadas</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Regressão</h3>
+          <ul>
+            <li><strong>MSE</strong> - Mean Squared Error</li>
+            <li><strong>RMSE</strong> - Root Mean Squared Error</li>
+            <li><strong>MAE</strong> - Mean Absolute Error</li>
+            <li><strong>R²</strong> - Coeficiente de Determinação</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Classificação</h3>
+          <ul>
+            <li><strong>Acurácia</strong> - Predições corretas</li>
+            <li><strong>Precisão</strong> - Verdadeiros positivos</li>
+            <li><strong>Recall</strong> - Sensibilidade</li>
+            <li><strong>F1-Score</strong> - Média harmônica</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Dataset -->
+    <div class="slide">
+      <h2>📊 Dataset TMDB</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Características</h3>
+          <ul>
+            <li><strong>Total:</strong> 1.938 registros válidos</li>
+            <li><strong>Features:</strong> Budget, Popularity, Runtime</li>
+            <li><strong>Target:</strong> Revenue (bilheteria)</li>
+            <li><strong>Filtros:</strong> Budget > $1M, Runtime > 60min</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Estatísticas</h3>
+          <ul>
+            <li><strong>Bilheteria Média:</strong> $95.8 milhões</li>
+            <li><strong>Bilheteria Mediana:</strong> $42.3 milhões</li>
+            <li><strong>Maior Bilheteria:</strong> $2.8 bilhões</li>
+            <li><strong>Orçamento Médio:</strong> $45.2 milhões</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Interface Web -->
+    <div class="slide">
+      <h2>🌐 Interface Web Interativa</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="emoji">🔮</div>
+          <h3>Preditor</h3>
+          <p>Entrada: Orçamento, Popularidade, Duração</p>
+          <p>Saída: Predição + classificação em tempo real</p>
+        </div>
+        <div class="card">
+          <div class="emoji">📊</div>
+          <h3>Análise</h3>
+          <p>Execução completa dos algoritmos</p>
+          <p>Gráficos de convergência e métricas</p>
+        </div>
+        <div class="card">
+          <div class="emoji">🎯</div>
+          <h3>Versões</h3>
+          <p>Comparação entre versões</p>
+          <p>Execução da análise acadêmica</p>
+        </div>
+        <div class="card">
+          <div class="emoji">ℹ️</div>
+          <h3>Sobre</h3>
+          <p>Documentação técnica completa</p>
+          <p>Detalhes da implementação</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 11: Resultados -->
+    <div class="slide">
+      <h2>📈 Resultados Obtidos</h2>
+      <div class="metrics">
+        <div class="metric">
+          <h3>Regressão Linear</h3>
+          <div class="metric-value">R² = 0.41</div>
+          <p>41% da variância explicada</p>
+        </div>
+        <div class="metric">
+          <h3>RMSE</h3>
+          <div class="metric-value">$84M</div>
+          <p>Erro médio quadrático</p>
+        </div>
+        <div class="metric">
+          <h3>Regressão Logística</h3>
+          <div class="metric-value">72%</div>
+          <p>Acurácia na classificação</p>
+        </div>
+        <div class="metric">
+          <h3>Convergência</h3>
+          <div class="metric-value">433</div>
+          <p>Iterações para convergir</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 12: Demonstração -->
+    <div class="slide">
+      <h2>🎯 Demonstração Prática</h2>
+      <div class="code">
+        { "input": { "budget": 50000000, "popularity": 25.5, "runtime": 120 },
+        "output": { "predicted_revenue": 95993959, "predicted_class": "Alta",
+        "probability": 0.73 } }
+      </div>
+      <div class="card">
+        <h3>Interpretação</h3>
+        <ul>
+          <li>Filme com orçamento de <strong>$50M</strong></li>
+          <li>
+            Popularidade <strong>25.5</strong>, duração <strong>120min</strong>
+          </li>
+          <li><span class="highlight">Predição: $96M de bilheteria</span></li>
+          <li><span class="highlight">73% chance de alta bilheteria</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Slide 13: Tecnologias -->
+    <div class="slide">
+      <h2>🔧 Tecnologias Utilizadas</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Backend</h3>
+          <ul>
+            <li><strong>Python 3.8+</strong> - Linguagem principal</li>
+            <li><strong>Flask</strong> - Framework web</li>
+            <li><strong>CSV nativo</strong> - Manipulação de dados</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Frontend</h3>
+          <ul>
+            <li><strong>HTML5 + CSS3</strong> - Interface moderna</li>
+            <li><strong>JavaScript ES6+</strong> - Interatividade</li>
+            <li><strong>Chart.js</strong> - Gráficos dinâmicos</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Machine Learning</h3>
+          <ul>
+            <li><strong>Implementação própria</strong> - Sem bibliotecas</li>
+            <li><strong>Gradiente descendente</strong> - Manual</li>
+            <li><strong>Métricas calculadas</strong> - Do zero</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Execução</h3>
+          <ul>
+            <li><strong>./start.sh</strong> - Script único</li>
+            <li><strong>3 opções</strong> - Web, acadêmica, ambos</li>
+            <li><strong>localhost:5000</strong> - Acesso local</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 14: Desafios -->
+    <div class="slide">
+      <h2>🔍 Principais Desafios</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Problemas Enfrentados</h3>
+          <ul>
+            <li>
+              <strong>Instabilidade numérica</strong> - Valores muito grandes
+            </li>
+            <li><strong>Convergência</strong> - Função de custo oscilando</li>
+            <li>
+              <strong>Normalização</strong> - Inconsistência entre versões
+            </li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Soluções Implementadas</h3>
+          <ul>
+            <li>
+              <strong>MSE normalizado</strong> - Divisão pelo desvio padrão
+            </li>
+            <li>
+              <strong>Proteção contra overflow</strong> - Clipping de valores
+            </li>
+            <li>
+              <strong>Padronização</strong> - Mesma lógica em todas as versões
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 15: Aprendizados -->
+    <div class="slide">
+      <h2>🎓 Aprendizados Obtidos</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Técnicos</h3>
+          <ul>
+            <li>✅ Implementação de algoritmos ML do zero</li>
+            <li>✅ Gradiente descendente na prática</li>
+            <li>✅ Tratamento de instabilidade numérica</li>
+            <li>✅ Desenvolvimento web com Flask</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Acadêmicos</h3>
+          <ul>
+            <li>✅ Metodologia científica aplicada</li>
+            <li>✅ Análise estatística de dados</li>
+            <li>✅ Visualização de resultados</li>
+            <li>✅ Documentação técnica completa</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 16: Conclusões -->
+    <div class="slide">
+      <h2>📋 Conclusões</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Objetivos Alcançados</h3>
+          <ul>
+            <li>✅ <strong>Implementação completa</strong> de algoritmos ML</li>
+            <li>
+              ✅ <strong>Interface web funcional</strong> para demonstrações
+            </li>
+            <li>✅ <strong>Análise acadêmica</strong> com visualizações</li>
+            <li>
+              ✅ <strong>Resultados satisfatórios</strong> para projeto
+              educacional
+            </li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Contribuições</h3>
+          <ul>
+            <li>📚 <strong>Material didático</strong> completo para IA</li>
+            <li>🎯 <strong>Exemplo prático</strong> de implementação ML</li>
+            <li>🌐 <strong>Ferramenta interativa</strong> para aprendizado</li>
+            <li>📊 <strong>Base para artigo científico</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 17: Agradecimentos -->
+    <div class="slide">
+      <h2>🙏 Agradecimentos</h2>
+      <div class="card">
+        <h3>Instituto Federal do Maranhão</h3>
+        <ul>
+          <li>Campus Imperatriz</li>
+          <li>Curso de Ciência da Computação</li>
+          <li>Disciplina: Introdução à IA</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Professor Daniel Duarte Costa</h3>
+        <ul>
+          <li>Orientação técnica</li>
+          <li>Metodologia aplicada</li>
+          <li>Suporte acadêmico</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Dataset TMDB</h3>
+        <ul>
+          <li>Dados reais de qualidade</li>
+          <li>Base para aprendizado prático</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Slide 18: Perguntas -->
+    <div class="slide">
+      <h2>❓ Perguntas e Discussão</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Tópicos para Debate</h3>
+          <ul>
+            <li>🤔 <strong>Implementação vs Bibliotecas Prontas</strong></li>
+            <li>🤔 <strong>Escolha de Algoritmos</strong> para o problema</li>
+            <li>🤔 <strong>Tratamento de Dados</strong> na prática</li>
+            <li>🤔 <strong>Avaliação de Performance</strong> em ML</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Demonstração ao Vivo</h3>
+          <ul>
+            <li>🌐 Interface web funcionando</li>
+            <li>📊 Execução dos algoritmos</li>
+            <li>🎯 Predições em tempo real</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 19: Final -->
+    <div class="slide">
+      <div class="emoji">🎬</div>
+      <h1>Obrigado pela atenção!</h1>
+      <h2>TMDB Box Office Predictor</h2>
+      <div class="card">
+        <h3>Recursos Disponíveis</h3>
+        <ul>
+          <li>📁 <strong>Código completo</strong> disponível</li>
+          <li>📋 <strong>Documentação detalhada</strong></li>
+          <li>🚀 <strong>Scripts de execução</strong></li>
+          <li>📊 <strong>Template para artigo científico</strong></li>
+        </ul>
+      </div>
+      <p><strong>Instituto Federal do Maranhão - IFMA</strong></p>
+      <p><strong>Disciplina: Introdução à IA</strong></p>
+    </div>
+
+    <!-- Navegação -->
+    <div class="navigation">
+      <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
+      <button class="nav-btn" onclick="nextSlide()">Próximo →</button>
+    </div>
+
+    <!-- Contador de slides -->
+    <div class="slide-counter">
+      <span id="current-slide">1</span> / <span id="total-slides">19</span>
+    </div>
+
+    <script>
+      let currentSlide = 0;
+      const slides = document.querySelectorAll(".slide");
+      const totalSlides = slides.length;
+
+      document.getElementById("total-slides").textContent = totalSlides;
+
+      function showSlide(n) {
+        slides[currentSlide].classList.remove("active");
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add("active");
+        document.getElementById("current-slide").textContent = currentSlide + 1;
+      }
+
+      function nextSlide() {
+        showSlide(currentSlide + 1);
+      }
+
+      function previousSlide() {
+        showSlide(currentSlide - 1);
+      }
+
+      // Navegação por teclado
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight" || e.key === " ") {
+          nextSlide();
+        } else if (e.key === "ArrowLeft") {
+          previousSlide();
+        }
+      });
+
+      // Inicializar
+      showSlide(0);
+    </script>
+  </body>
+</html>

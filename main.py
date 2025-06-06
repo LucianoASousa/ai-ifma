@@ -97,10 +97,7 @@ class RegressaoLinear:
         plt.show()
 
 class RegressaoLogistica:
-    """
-    Implementação de Regressão Logística com Gradiente Descendente
-    Sem uso de bibliotecas prontas como sklearn
-    """
+  
     
     def __init__(self, learning_rate=0.01, max_iterations=1000, tolerance=1e-6):
         self.learning_rate = learning_rate
@@ -450,6 +447,32 @@ def main():
     
     # Plotar evolução do custo
     reg_linear.plot_cost_history()
+    
+    # Gráfico de dispersão: Receita Real vs Prevista
+    plt.figure(figsize=(10, 8))
+    plt.scatter(y_test, y_pred_test, alpha=0.6, color='blue', s=50, edgecolors='black', linewidth=0.5)
+    
+    # Linha de referência perfeita (y = x)
+    min_val = min(min(y_test), min(y_pred_test))
+    max_val = max(max(y_test), max(y_pred_test))
+    plt.plot([min_val, max_val], [min_val, max_val], 'r--', linewidth=2, label='Predição Perfeita (y=x)')
+    
+    # Formatação do gráfico
+    plt.xlabel('Receita Real', fontsize=12)
+    plt.ylabel('Receita Prevista', fontsize=12)
+    plt.title('Gráfico de Dispersão: Receita Real vs Receita Prevista\nRegressão Linear', fontsize=14, fontweight='bold')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    
+    # Adicionar informações estatísticas no gráfico
+    r2_test = Metricas.r2_score(y_test, y_pred_test)
+    rmse_test = Metricas.rmse(y_test, y_pred_test)
+    plt.text(0.05, 0.95, f'R² = {r2_test:.4f}\nRMSE = {rmse_test:.2e}', 
+             transform=plt.gca().transAxes, fontsize=11, 
+             verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+    
+    plt.tight_layout()
+    plt.show()
     
     # 6. REGRESSÃO LOGÍSTICA (transformar em problema de classificação)
     print("\n" + "="*80)

@@ -497,6 +497,10 @@ body {
   text-align: center;
 }
 
+.chart-card.full-width {
+  grid-column: 1 / -1;
+}
+
 .confusion-matrix-card {
   background: #374151;
   padding: 25px;

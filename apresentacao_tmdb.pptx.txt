@@ -1,0 +1,370 @@
+APRESENTAÇÃO POWERPOINT - TMDB BOX OFFICE PREDICTOR
+=====================================================
+
+SLIDE 1: TÍTULO
+===============
+🎬 TMDB Box Office Predictor
+Predição de Bilheteria usando Machine Learning
+
+Instituto Federal do Maranhão - IFMA Campus Imperatriz
+Disciplina: Introdução à Inteligência Artificial
+Professor: Daniel Duarte Costa
+
+SLIDE 2: AGENDA
+===============
+📋 Agenda da Apresentação
+
+1. Visão Geral do Projeto
+2. Objetivos e Metodologia  
+3. Arquitetura e Estrutura
+4. Algoritmos Implementados
+5. Interface Web Interativa
+6. Resultados e Métricas
+7. Demonstração Prática
+8. Conclusões e Aprendizados
+
+SLIDE 3: VISÃO GERAL
+====================
+🎯 Visão Geral do Projeto
+
+O QUE É?
+• Sistema de predição de bilheteria de filmes usando Machine Learning
+• Implementação do zero (sem sklearn) de algoritmos fundamentais
+• Dataset real do TMDB com 1.938 filmes válidos
+
+DIFERENCIAIS:
+✅ Implementação própria de todos os algoritmos
+✅ Interface web moderna para demonstrações
+✅ Análise acadêmica completa com visualizações
+✅ Três versões diferentes do mesmo projeto
+
+SLIDE 4: OBJETIVOS
+==================
+🎯 Objetivos do Projeto
+
+OBJETIVO PRINCIPAL:
+Desenvolver um sistema completo de predição de bilheteria implementando algoritmos de ML do zero
+
+OBJETIVOS ESPECÍFICOS:
+📊 Implementar Regressão Linear com gradiente descendente
+🎯 Implementar Regressão Logística para classificação
+📈 Calcular métricas completas manualmente
+🌐 Criar interface web para demonstrações
+📋 Gerar análise acadêmica com visualizações
+
+SLIDE 5: ARQUITETURA
+====================
+🏗️ Arquitetura do Sistema
+
+ESTRUTURA DO PROJETO:
+📁 tmdb-ml-project/
+├── 🌐 app.py              # Interface Web Flask (323 linhas)
+├── 📊 main.py             # Análise Acadêmica (527 linhas)  
+├── 🔧 main_simple.py      # Classes ML do Zero (614 linhas)
+├── 🚀 start.sh            # Script de Inicialização
+├── 📁 data/              # Datasets TMDB (67MB)
+├── 📁 web/               # Interface Moderna
+│   ├── templates/        # HTML (701 linhas)
+│   └── static/          # CSS + JavaScript (1635 linhas)
+└── 📁 docs/             # Documentação
+
+TRÊS VERSÕES COMPLEMENTARES:
+1. Web - Demonstração interativa
+2. Acadêmica - Gráficos para artigo científico  
+3. Pura - Implementação educacional
+
+SLIDE 6: REGRESSÃO LINEAR
+=========================
+🧠 Regressão Linear
+
+FÓRMULAS:
+# Gradiente Descendente Manual
+θ = θ - α∇J(θ)
+
+# Função de Custo MSE Normalizada
+J(θ) = 1/2m Σ(h(x) - y)² / σ_y
+
+CARACTERÍSTICAS:
+• Learning Rate: 0.01
+• Convergência: Automática
+• Normalização: Para estabilidade
+
+FEATURES → TARGET:
+• Budget (Orçamento)
+• Popularity (Popularidade)  
+• Runtime (Duração)
+• → Revenue (Bilheteria)
+
+SLIDE 7: REGRESSÃO LOGÍSTICA
+============================
+🧠 Regressão Logística
+
+FÓRMULAS:
+# Função Sigmoid
+σ(z) = 1/(1 + e^(-z))
+
+# Log-Likelihood
+J = -1/m Σ[y*log(h) + (1-y)*log(1-h)]
+
+CARACTERÍSTICAS:
+• Classificação: Alta/Baixa bilheteria
+• Threshold: Baseado na mediana ($42.3M)
+• Proteção: Contra overflow
+
+SAÍDA:
+• Classe: Alta ou Baixa
+• Probabilidade: 0 a 1
+• Threshold: $42.3M (mediana)
+
+SLIDE 8: MÉTRICAS
+=================
+📊 Métricas Implementadas
+
+REGRESSÃO:
+• MSE - Mean Squared Error
+• RMSE - Root Mean Squared Error  
+• MAE - Mean Absolute Error
+• R² - Coeficiente de Determinação
+
+CLASSIFICAÇÃO:
+• Acurácia - Predições corretas
+• Precisão - Verdadeiros positivos
+• Recall - Sensibilidade
+• F1-Score - Média harmônica
+
+SLIDE 9: DATASET
+================
+📊 Dataset TMDB
+
+CARACTERÍSTICAS DOS DADOS:
+• Total: 1.938 registros válidos
+• Features: Budget, Popularity, Runtime
+• Target: Revenue (bilheteria)
+• Filtros: Budget > $1M, Runtime > 60min
+
+ESTATÍSTICAS:
+• Bilheteria Média: $95.8 milhões
+• Bilheteria Mediana: $42.3 milhões
+• Maior Bilheteria: $2.8 bilhões
+• Orçamento Médio: $45.2 milhões
+
+SLIDE 10: INTERFACE WEB
+======================
+🌐 Interface Web Interativa
+
+4 ABAS PRINCIPAIS:
+
+🔮 PREDITOR:
+• Entrada: Orçamento, Popularidade, Duração
+• Saída: Predição de bilheteria + classificação
+• Tempo real com validação
+
+📊 ANÁLISE:
+• Execução completa dos algoritmos
+• Gráficos de convergência
+• Métricas detalhadas
+
+🎯 VERSÕES:
+• Comparação entre versões
+• Execução da análise acadêmica
+• Integração completa
+
+ℹ️ SOBRE:
+• Documentação técnica
+• Detalhes da implementação
+
+SLIDE 11: RESULTADOS
+====================
+📈 Resultados Obtidos
+
+PERFORMANCE DOS MODELOS:
+
+REGRESSÃO LINEAR:
+• R² Score: ~0.41 (41% da variância explicada)
+• RMSE: ~$84 milhões
+• MAE: ~$58 milhões
+• Convergência: ~433 iterações
+
+REGRESSÃO LOGÍSTICA:
+• Acurácia: ~72%
+• Precisão: ~75%
+• Recall: ~68%
+• F1-Score: ~71%
+
+SLIDE 12: DEMONSTRAÇÃO
+======================
+🎯 Demonstração Prática
+
+EXEMPLO DE PREDIÇÃO:
+{
+  "input": {
+    "budget": 50000000,
+    "popularity": 25.5,
+    "runtime": 120
+  },
+  "output": {
+    "predicted_revenue": 95993959,
+    "predicted_class": "Alta",
+    "probability": 0.73
+  }
+}
+
+INTERPRETAÇÃO:
+• Filme com orçamento de $50M
+• Popularidade 25.5, duração 120min
+• Predição: $96M de bilheteria
+• 73% chance de alta bilheteria
+
+SLIDE 13: TECNOLOGIAS
+=====================
+🔧 Tecnologias Utilizadas
+
+BACKEND:
+• Python 3.8+ - Linguagem principal
+• Flask - Framework web
+• CSV nativo - Manipulação de dados
+
+FRONTEND:
+• HTML5 + CSS3 - Interface moderna
+• JavaScript ES6+ - Interatividade
+• Chart.js - Gráficos dinâmicos
+• Glassmorphism - Design moderno
+
+MACHINE LEARNING:
+• Implementação própria - Sem bibliotecas prontas
+• Gradiente descendente - Otimização manual
+• Métricas calculadas - Do zero
+
+EXECUÇÃO:
+• ./start.sh - Script único
+• 3 opções - Web, acadêmica, ambos
+• localhost:5000 - Acesso local
+
+SLIDE 14: DESAFIOS
+==================
+🔍 Principais Desafios
+
+PROBLEMAS ENFRENTADOS:
+1. Instabilidade numérica - Valores de bilheteria muito grandes
+2. Convergência - Função de custo oscilando
+3. Normalização - Inconsistência entre versões
+
+SOLUÇÕES IMPLEMENTADAS:
+1. MSE normalizado - Divisão pelo desvio padrão
+2. Proteção contra overflow - Clipping de valores
+3. Padronização - Mesma lógica em todas as versões
+
+SLIDE 15: APRENDIZADOS
+======================
+🎓 Aprendizados Obtidos
+
+TÉCNICOS:
+✅ Implementação de algoritmos ML do zero
+✅ Gradiente descendente na prática
+✅ Tratamento de instabilidade numérica
+✅ Desenvolvimento web com Flask
+
+ACADÊMICOS:
+✅ Metodologia científica aplicada
+✅ Análise estatística de dados
+✅ Visualização de resultados
+✅ Documentação técnica completa
+
+SLIDE 16: MELHORIAS
+===================
+🔮 Possíveis Melhorias
+
+ALGORITMOS:
+🔄 Regularização (L1/L2)
+🔄 Outros algoritmos (SVM, Random Forest)
+🔄 Feature Engineering avançado
+🔄 Cross-validation
+
+INTERFACE:
+🔄 Mais visualizações interativas
+🔄 Comparação de modelos lado a lado
+🔄 Upload de dados personalizados
+🔄 Exportação de resultados
+
+SLIDE 17: CONCLUSÕES
+====================
+📋 Conclusões
+
+OBJETIVOS ALCANÇADOS:
+✅ Implementação completa de algoritmos ML do zero
+✅ Interface web funcional para demonstrações
+✅ Análise acadêmica com visualizações profissionais
+✅ Resultados satisfatórios para um projeto educacional
+
+CONTRIBUIÇÕES:
+📚 Material didático completo para IA
+🎯 Exemplo prático de implementação ML
+🌐 Ferramenta interativa para aprendizado
+📊 Base para artigo científico
+
+SLIDE 18: AGRADECIMENTOS
+========================
+🙏 Agradecimentos
+
+INSTITUTO FEDERAL DO MARANHÃO:
+• Campus Imperatriz
+• Curso de Ciência da Computação
+• Disciplina: Introdução à IA
+
+PROFESSOR DANIEL DUARTE COSTA:
+• Orientação técnica
+• Metodologia aplicada
+• Suporte acadêmico
+
+DATASET TMDB:
+• Dados reais de qualidade
+• Base para aprendizado prático
+
+SLIDE 19: PERGUNTAS
+===================
+❓ Perguntas e Discussão
+
+TÓPICOS PARA DEBATE:
+🤔 Implementação vs Bibliotecas Prontas
+🤔 Escolha de Algoritmos para o problema
+🤔 Tratamento de Dados na prática
+🤔 Avaliação de Performance em ML
+
+DEMONSTRAÇÃO AO VIVO:
+🌐 Interface web funcionando
+📊 Execução dos algoritmos
+🎯 Predições em tempo real
+
+SLIDE 20: FINAL
+===============
+🎬 Obrigado pela atenção!
+
+TMDB Box Office Predictor
+
+RECURSOS DISPONÍVEIS:
+📁 Código completo disponível
+📋 Documentação detalhada
+🚀 Scripts de execução
+📊 Template para artigo científico
+🎯 Exemplos de uso da API
+📈 Dados de exemplo para testes
+
+Instituto Federal do Maranhão - IFMA
+Disciplina: Introdução à IA
+
+INSTRUÇÕES PARA USO:
+====================
+1. Este arquivo pode ser usado como roteiro para criar slides no PowerPoint
+2. Cada seção "SLIDE X:" representa um slide individual
+3. Use as informações para criar slides visuais atraentes
+4. Inclua gráficos, imagens e animações conforme necessário
+5. Mantenha o design consistente com a identidade do IFMA
+
+DICAS DE APRESENTAÇÃO:
+======================
+• Use transições suaves entre slides
+• Inclua demonstração ao vivo da interface web
+• Prepare exemplos práticos de predições
+• Tenha backup dos resultados caso a demo falhe
+• Pratique o timing para 15-20 minutos
+• Prepare respostas para perguntas técnicas comuns 

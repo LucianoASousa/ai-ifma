@@ -533,6 +533,54 @@ def main():
         print(f"Custo inicial: {reg_linear.cost_history[0]:.2e}")
         print(f"Custo final: {reg_linear.cost_history[-1]:.2e}")
     
+    # Análise de Dispersão: Receita Real vs Prevista
+    print("\n" + "-"*60)
+    print("ANÁLISE DE DISPERSÃO: RECEITA REAL vs PREVISTA")
+    print("-"*60)
+    
+    # Calcular correlação manual
+    n = len(y_test)
+    mean_real = sum(y_test) / n
+    mean_pred = sum(y_pred_test) / n
+    
+    numerator = sum((y_test[i] - mean_real) * (y_pred_test[i] - mean_pred) for i in range(n))
+    sum_sq_real = sum((y_test[i] - mean_real) ** 2 for i in range(n))
+    sum_sq_pred = sum((y_pred_test[i] - mean_pred) ** 2 for i in range(n))
+    
+    correlation = numerator / (sum_sq_real * sum_sq_pred) ** 0.5 if sum_sq_real > 0 and sum_sq_pred > 0 else 0
+    
+    print(f"Correlação entre valores reais e preditos: {correlation:.4f}")
+    print(f"Média dos valores reais: ${mean_real:,.0f}")
+    print(f"Média dos valores preditos: ${mean_pred:,.0f}")
+    
+    # Mostrar algumas comparações diretas
+    print(f"\nComparações diretas (primeiras 10 amostras):")
+    print(f"{'Real':>15} {'Predito':>15} {'Erro':>15} {'Erro %':>10}")
+    print("-" * 60)
+    
+    for i in range(min(10, len(y_test))):
+        real = y_test[i]
+        pred = y_pred_test[i]
+        erro = abs(real - pred)
+        erro_pct = (erro / real * 100) if real > 0 else 0
+        print(f"${real:>14,.0f} ${pred:>14,.0f} ${erro:>14,.0f} {erro_pct:>9.1f}%")
+    
+    # Análise de qualidade das predições
+    erros_absolutos = [abs(y_test[i] - y_pred_test[i]) for i in range(len(y_test))]
+    erro_medio = sum(erros_absolutos) / len(erros_absolutos)
+    
+    # Contar predições dentro de diferentes margens de erro
+    margem_10 = sum(1 for i in range(len(y_test)) if abs(y_test[i] - y_pred_test[i]) / y_test[i] <= 0.1 if y_test[i] > 0)
+    margem_25 = sum(1 for i in range(len(y_test)) if abs(y_test[i] - y_pred_test[i]) / y_test[i] <= 0.25 if y_test[i] > 0)
+    margem_50 = sum(1 for i in range(len(y_test)) if abs(y_test[i] - y_pred_test[i]) / y_test[i] <= 0.5 if y_test[i] > 0)
+    
+    print(f"\nQualidade das Predições:")
+    print(f"Erro médio absoluto: ${erro_medio:,.0f}")
+    print(f"Predições dentro de 10% do valor real: {margem_10}/{len(y_test)} ({margem_10/len(y_test)*100:.1f}%)")
+    print(f"Predições dentro de 25% do valor real: {margem_25}/{len(y_test)} ({margem_25/len(y_test)*100:.1f}%)")
+    print(f"Predições dentro de 50% do valor real: {margem_50}/{len(y_test)} ({margem_50/len(y_test)*100:.1f}%)")
+    print("-"*60)
+    
     # 6. REGRESSÃO LOGÍSTICA
     print("\n" + "="*80)
     print("REGRESSÃO LOGÍSTICA")

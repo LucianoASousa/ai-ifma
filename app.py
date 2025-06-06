@@ -109,7 +109,10 @@ def treinar_modelos():
     print("📈 Treinando Regressão Linear...")
     reg_linear = RegressaoLinear(learning_rate=0.01, max_iterations=1000)
     reg_linear.fit(X_train, y_reg_train)
-    pred_reg_test = reg_linear.predict(X_test)
+    pred_reg_test_raw = reg_linear.predict(X_test)
+    
+    # Garantir que as predições sejam não-negativas (bilheteria não pode ser negativa)
+    pred_reg_test = [max(0, pred) for pred in pred_reg_test_raw]
     
     # Treinar Regressão Logística
     print("📊 Treinando Regressão Logística...")
@@ -121,7 +124,7 @@ def treinar_modelos():
     # Calcular métricas
     metricas = Metricas()
     
-    # Métricas de Regressão Linear
+    # Métricas de Regressão Linear (usando predições corrigidas)
     mse_test = metricas.mse(y_reg_test, pred_reg_test)
     rmse_test = metricas.rmse(y_reg_test, pred_reg_test)
     mae_test = metricas.mae(y_reg_test, pred_reg_test)
@@ -151,6 +154,35 @@ def treinar_modelos():
             'probability': prob_test[i]
         })
     
+    # Dados para gráfico de dispersão (filtrar outliers extremos para melhor visualização)
+    # Remover os 5% maiores e menores valores para melhor visualização
+    combined_values = list(zip(y_reg_test, pred_reg_test))
+    combined_values.sort(key=lambda x: max(x[0], x[1]))
+    
+    # Pegar 90% dos dados centrais (remover 5% de cada extremo)
+    start_idx = int(len(combined_values) * 0.05)
+    end_idx = int(len(combined_values) * 0.95)
+    filtered_values = combined_values[start_idx:end_idx]
+    
+    if filtered_values:
+        filtered_real = [x[0] for x in filtered_values]
+        filtered_pred = [x[1] for x in filtered_values]
+        
+        scatter_data = {
+            'real_values': filtered_real,
+            'predicted_values': filtered_pred,
+            'min_value': min(min(filtered_real), min(filtered_pred)),
+            'max_value': max(max(filtered_real), max(filtered_pred))
+        }
+    else:
+        # Fallback se não houver dados filtrados
+        scatter_data = {
+            'real_values': y_reg_test,
+            'predicted_values': pred_reg_test,
+            'min_value': min(min(y_reg_test), min(pred_reg_test)),
+            'max_value': max(max(y_reg_test), max(pred_reg_test))
+        }
+    
     cached_results = {
         'models': {
             'linear': reg_linear,
@@ -178,10 +210,13 @@ def treinar_modelos():
             'confusion_matrix': cm
         },
         'predictions_sample': predictions_sample,
+        'scatter_data': scatter_data,
         'dataset_info': {
             'total_samples': len(dados),
-            'mean_revenue': sum(y_regression) / len(y_regression),
-            'median_revenue': mediana_revenue
+            'mean_revenue': sum(y_regression) / len(y_regression) if y_regression else 0,
+            'median_revenue': mediana_revenue,
+            'max_revenue': max(y_regression) if y_regression else 0,
+            'min_revenue': min(y_regression) if y_regression else 0
         }
     }
     
@@ -218,6 +253,7 @@ def predict():
         
         # Fazer predições
         pred_revenue = models['linear'].predict(X_pred_norm)[0]
+        pred_revenue = max(0, pred_revenue)
         pred_class = models['logistic'].predict(X_pred_norm)[0]
         pred_prob = models['logistic'].predict_proba(X_pred_norm)[0]
         
@@ -248,6 +284,7 @@ def analyze():
             'linear_regression': results['linear_regression'],
             'logistic_regression': results['logistic_regression'],
             'predictions_sample': results['predictions_sample'],
+            'scatter_data': results['scatter_data'],
             'dataset_info': results['dataset_info']
         }
         
